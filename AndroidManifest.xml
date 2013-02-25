@@ -4,6 +4,10 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
+
     <uses-sdk
         android:minSdkVersion="10"
         android:targetSdkVersion="17" />
@@ -21,6 +25,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="ch.swisscom.cats_android.GetJsonActivity"
+            android:label="@string/title_activity_get_json" >
         </activity>
     </application>
 

@@ -8,6 +8,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.view.Menu;
 
 public class GetJsonActivity extends Activity {
@@ -16,6 +17,10 @@ public class GetJsonActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_get_json);
+		// Some debug
+		SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+		System.out.println("UserName: " +settings.getString("user", null));
+		
 		this.getHttpRequest();
 	}
 
@@ -67,4 +72,6 @@ public class GetJsonActivity extends Activity {
 		);
 
 	}
+	
+	
 }
