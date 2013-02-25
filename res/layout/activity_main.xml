@@ -48,6 +48,4 @@
         android:hint="@string/txt_user_password"
         android:inputType="textPassword"  />
 
-
-
 </RelativeLayout>

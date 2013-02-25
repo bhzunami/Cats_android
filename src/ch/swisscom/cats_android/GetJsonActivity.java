@@ -10,16 +10,18 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.view.Menu;
+import android.view.View;
 
 public class GetJsonActivity extends Activity {
+	
+	SharedPreferences settings;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_get_json);
 		// Some debug
-		SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
-		System.out.println("UserName: " +settings.getString("user", null));
+		settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
 		
 		this.getHttpRequest();
 	}
@@ -73,5 +75,28 @@ public class GetJsonActivity extends Activity {
 
 	}
 	
+	public void logoutUser(View view) {
+		// clear the data
+		if(settings == null)
+			return;
+		
+		SharedPreferences.Editor editor = this.settings.edit();
+		editor.putString("user", null);
+		editor.putString("password", null);
+		
+		finish();
+		System.exit(0);
+		
+		// Clear input
+//		this.userName.setText(null);
+//		this.userPassword.setText(null);
+//		
+//		// and set the correct focus
+//		this.userName.setFocusableInTouchMode(true);
+//		this.userName.requestFocus();
+
+		// commit the shit
+		editor.commit();
+	}
 	
 }

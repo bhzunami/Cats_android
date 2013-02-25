@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 	public static final String PREFS_NAME = "UserAccount";
 	
 	private String user = null;
-	private String password = null;
+//	private String password = null;
 	// InputsFields
 	EditText userName;
 	EditText userPassword;
@@ -32,14 +32,22 @@ public class MainActivity extends Activity {
 
 		// get the shared preference
 		this.user = settings.getString("user", "");
+		// check if the user is still logged in.
+		if( this.user != "")
+			try {
+				this.getJson( this.findViewById( R.id.btn_get_json) );
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
-		if (this.userName != null)
-			this.userName.setText(this.user);
+//		if (this.userName != null)
+//			this.userName.setText(this.user);
 		
-		this.password = settings.getString("password", "");
-		
-		if(this.userPassword != null)
-			this.userPassword.setText(this.password);
+//		this.password = settings.getString("password", "");
+//		
+//		if(this.userPassword != null)
+//			this.userPassword.setText(this.password);
 
 	}
 
@@ -72,4 +80,5 @@ public class MainActivity extends Activity {
 		this.userName = (EditText) findViewById(R.id.etxt_user_name);
 		this.userPassword = (EditText) findViewById(R.id.etxt_password);
 	}
+	
 }
