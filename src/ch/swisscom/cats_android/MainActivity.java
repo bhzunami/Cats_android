@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -41,6 +43,7 @@ public class MainActivity extends Activity {
 		this.user = settings.getString("user", "");
 		if( this.user == "") {
 			this.goToLoginView();
+			return;
 		}
 		
 		// Get the Json from Server
@@ -100,12 +103,22 @@ public class MainActivity extends Activity {
 			public void onFailure(Throwable e, String response) {
 				// Response failed :(
 				Log.e(TAG, "Could not get request!");
+				this.setToast("There was an error by get the request");
 			}
 
 			@Override
 			public void onFinish() {
 				// Response failed :(
 				Log.i(TAG, "Async request finished.");
+			}
+			
+			private void setToast(String message) {
+				Context context = getApplicationContext();
+				CharSequence text = message;
+				int duration = Toast.LENGTH_SHORT;
+
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.show();
 			}
 		}
 
