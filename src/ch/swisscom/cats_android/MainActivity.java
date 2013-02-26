@@ -37,19 +37,21 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		// Get SharedPreferences
-		this.initalize();
-
+		this.initalize();		
+	}
+	
+	public void onStart() {
+		super.onStart();
+		Log.i(TAG, "Start Appi");
 		// get the userName to check if user is logged in
 		this.user = settings.getString("user", "");
-		if( this.user == "") {
+		if (this.user == "") {
 			this.goToLoginView();
 			return;
 		}
-		
+
 		this.executeHttpRequest();
-		
 	}
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,6 +178,9 @@ public class MainActivity extends Activity {
 	        case R.id.menu_logout:
 	        	this.logoutUser();
 	            return true;
+	        case R.id.menu_refresh:
+	        	this.executeHttpRequest();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
