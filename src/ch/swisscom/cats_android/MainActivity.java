@@ -46,12 +46,11 @@ public class MainActivity extends Activity {
 			return;
 		}
 		
-		// Get the Json from Server
 		this.executeHttpRequest();
 		
 		//TODO: parse Json array in a ArrayList<String>
 		// initalize the list view
-		this.createListView( this.getDataFromJson() );
+//		this.createListView( this.getDataFromJson() );
 	}
 	
 
@@ -97,13 +96,16 @@ public class MainActivity extends Activity {
 //
 				// Do something with the response
 				Log.i(TAG, text);
+			
+				ajaxHandlerFinishLoading(array);
+				
 			}
 
 			@Override
 			public void onFailure(Throwable e, String response) {
 				// Response failed :(
 				Log.e(TAG, "Could not get request!");
-				this.setToast("There was an error by get the request");
+				setToast("There was an error by get the request");
 			}
 
 			@Override
@@ -112,17 +114,19 @@ public class MainActivity extends Activity {
 				Log.i(TAG, "Async request finished.");
 			}
 			
-			private void setToast(String message) {
-				Context context = getApplicationContext();
-				CharSequence text = message;
-				int duration = Toast.LENGTH_SHORT;
-
-				Toast toast = Toast.makeText(context, text, duration);
-				toast.show();
-			}
+			
 		}
 
 		);}
+	
+	public void setToast(String message) {
+		Context context = getApplicationContext();
+		CharSequence text = message;
+		int duration = Toast.LENGTH_SHORT;
+
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.show();
+	}
 	
 	
 	// Parse the Json into ArrayList<String>
@@ -139,6 +143,11 @@ public class MainActivity extends Activity {
 		values.add("7");
 		return values;
 		
+	}
+	
+	public void ajaxHandlerFinishLoading(JSONArray array) {
+		//TODO: Handle json array
+		this.createListView(this.getDataFromJson());
 	}
 	
 	
