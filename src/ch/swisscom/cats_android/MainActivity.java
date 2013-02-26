@@ -48,9 +48,6 @@ public class MainActivity extends Activity {
 		
 		this.executeHttpRequest();
 		
-		//TODO: parse Json array in a ArrayList<String>
-		// initalize the list view
-//		this.createListView( this.getDataFromJson() );
 	}
 	
 
@@ -107,14 +104,7 @@ public class MainActivity extends Activity {
 				Log.e(TAG, "Could not get request!");
 				setToast("There was an error by get the request");
 			}
-
-			@Override
-			public void onFinish() {
-				// Response failed :(
-				Log.i(TAG, "Async request finished.");
-			}
-			
-			
+		// Finish definition Class
 		}
 
 		);}
