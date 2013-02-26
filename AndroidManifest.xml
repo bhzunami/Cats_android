@@ -27,8 +27,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ch.swisscom.cats_android.GetJsonActivity"
-            android:label="@string/title_activity_get_json" >
+            android:name="ch.swisscom.cats_android.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
     </application>
 

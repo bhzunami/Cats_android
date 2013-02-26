@@ -3,49 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
-
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
-        android:text="@string/txt_title_main"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
+    
     <Button
-        android:id="@+id/btn_get_json"
+        android:id="@+id/btn_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:onClick="getJson"
-        android:text="@string/btn_get_json" />
+        android:onClick="logoutUser"
+      
+        android:text="@string/btn_logout" />
 
-    <EditText
-        android:id="@+id/etxt_user_name"
-        android:layout_width="wrap_content"
+    <ListView
+        android:id="@+id/list_jsonData"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/txtTitle"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="@string/txt_user_name"
-        android:lines="@integer/max_line"
-        android:maxLines="@integer/max_line"
-        android:scrollbarAlwaysDrawVerticalTrack="false" >
-                <requestFocus />
-    </EditText>
+        android:layout_below="@+id/btn_logout"
+        android:layout_centerHorizontal="true" >
 
-    <EditText
-        android:id="@+id/etxt_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/etxt_user_name"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="@string/txt_user_password"
-        android:inputType="textPassword"  />
+    </ListView>
 
+   
 </RelativeLayout>
