@@ -3,6 +3,5 @@
 
     <string name="app_name">Cats_android</string>
     <string name="menu_settings">Settings</string>
-    <string name="btn_logout">Logout</string>
-
+    <string name="menu_logout">Logout</string>
 </resources>

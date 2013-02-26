@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		System.out.println("Create");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -134,7 +135,7 @@ public class MainActivity extends Activity {
 		listView.setAdapter( adapter );
 	}
 	
-	public void logoutUser(View view) {
+	public void logoutUser() {
 		if(settings == null)
 			return;
 
@@ -149,8 +150,19 @@ public class MainActivity extends Activity {
 	}
 	
 	private void goToLoginView() {
-		Intent intent = new Intent(this,LoginActivity.class);
+		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.menu_logout:
+	        	this.logoutUser();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 }
