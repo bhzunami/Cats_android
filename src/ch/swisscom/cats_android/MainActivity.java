@@ -181,9 +181,17 @@ public class MainActivity extends Activity {
 	        case R.id.menu_refresh:
 	        	this.executeHttpRequest();
 	        	return true;
+	        case R.id.menu_newEntry:
+	        	this.startActivityNewEntry();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
 	
+	private void startActivityNewEntry() {
+		Intent intent = new Intent(this, NewEntryActivity.class);
+		startActivity(intent);
+		
+	}
 }
