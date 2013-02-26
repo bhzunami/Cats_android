@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -20,6 +21,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 public class MainActivity extends Activity {
 
 	public static final String PREFS_NAME = "UserAccount";
+	private static final String TAG = "CATS_ANDROID";
 	
 	private String user = null;
 	
@@ -27,7 +29,8 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		System.out.println("Create");
+		Log.i(TAG, "Application started.");
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -64,12 +67,13 @@ public class MainActivity extends Activity {
 	
 	
 	public void executeHttpRequest() {
+		Log.i(TAG, "Get request.");
 		// perform request to server
 		HttpHandler.get("time", null, new JsonHttpResponseHandler() {
 			
 			public void onSuccess(JSONArray array) {
 				// Pull out the first event on the public timeline
-				System.out.println("Success" +array);
+				Log.i(TAG, "Request was successful.");
 				
 				JSONObject firstEvent = null;
 				
@@ -89,19 +93,19 @@ public class MainActivity extends Activity {
 				}
 //
 				// Do something with the response
-				System.out.println(text);
+				Log.i(TAG, text);
 			}
 
 			@Override
 			public void onFailure(Throwable e, String response) {
 				// Response failed :(
-				System.out.println("Fehler");
+				Log.e(TAG, "Could not get request!");
 			}
 
 			@Override
 			public void onFinish() {
 				// Response failed :(
-				System.out.println("Fertig");
+				Log.i(TAG, "Async request finished.");
 			}
 		}
 
