@@ -1,6 +1,10 @@
 <resources>
 
     <string name="title_activity_login">Log in</string>
+    <string name="txt_loginTitle">Login for Cats</string>
+     <string name="img_logoDescription">Logo</string>
+   
+    
 
     <!-- Strings related to login -->
     <string name="prompt_email">Benutzer</string>
