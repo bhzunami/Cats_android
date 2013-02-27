@@ -31,6 +31,10 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
+        <activity
+            android:name="ch.swisscom.cats_android.NewEntryActivity"
+            android:label="@string/title_activity_new_entry" >
+        </activity>
     </application>
 
 </manifest>
