@@ -1,83 +1,66 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     tools:context=".MainActivity" >
 
-    
-   <!-- <ListView
+    <!--
+    <ListView
         android:id="@+id/list_jsonData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" >
-    </ListView> -->
-    
-    <TabHost
-        android:id="@android:id/tabhost"
+    </ListView>
+
+    -->
+
+    <ImageView
+        android:id="@+id/img_logo_main"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:contentDescription="@string/img_logoDescription_main"
+        android:paddingLeft="180dp"
+        android:src="@drawable/logo" />
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_height="wrap_content" >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/txt_uebersicht"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_uebersicht"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/btn_datePicker"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="90dp"
+            android:maxHeight="10dp"
+            android:onClick="showDatePickerDialog"
+            android:text="@string/pick_date" />
+        
+        
+        
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="126dp" >
-            </TabWidget>
+    </LinearLayout>
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
 
-                <LinearLayout
-                    android:id="@+id/tab1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+    <ListView
+        android:id="@+id/list_jsonData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ListView>
 
-                    <ListView
-                        android:id="@+id/list_jsonData"
-                        android:layout_width="match_parent"
-                        android:layout_height="215dp"
-                        android:layout_marginTop="64dp"
-                        android:layout_weight="1" >
-                    </ListView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <Button
-                        android:id="@+id/button2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="27dp"
-                        android:text="Button" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <Button
-                        android:id="@+id/button1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Button" />
-
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
-
-</RelativeLayout>
+</LinearLayout>

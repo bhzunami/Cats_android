@@ -5,4 +5,10 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_refresh">Aktualisieren</string>
+    <string name="txt_uebersicht">Übersicht</string>
+    <string name="img_logoDescription_main">Logo</string>
+    <string name="pick_date">Datum</string>
+    
+    
+
 </resources>
