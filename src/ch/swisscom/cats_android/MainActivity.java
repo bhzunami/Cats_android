@@ -197,6 +197,11 @@ public class MainActivity extends FragmentActivity {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
 	}
+	
+	private void goToNewEntryView() {
+		Intent intent = new Intent(this, NewEntryActivity.class);
+		startActivity(intent);
+	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
@@ -206,6 +211,9 @@ public class MainActivity extends FragmentActivity {
 			return true;
 		case R.id.menu_refresh:
 			this.executeHttpRequest();
+			return true;
+		case R.id.menu_newEntry:
+			this.goToNewEntryView();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

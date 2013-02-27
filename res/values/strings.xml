@@ -7,7 +7,8 @@
     <string name="menu_refresh">Aktualisieren</string>
     <string name="txt_uebersicht">Übersicht</string>
     <string name="img_logoDescription_main">Logo</string>
-    <string name="pick_date">Datum</string>
+    <string name="pick_date_now">Datum</string>
+    <string name="menu_newEntry">Neuer Eintrag</string>
     
  
 </resources>

@@ -46,7 +46,7 @@
             android:layout_marginLeft="90dp"
             android:maxHeight="10dp"
             android:onClick="showDatePickerDialog"
-            android:text="@string/pick_date" />
+            android:text="@string/pick_date_now" />
         
         
         
