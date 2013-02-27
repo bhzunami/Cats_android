@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="title_new_entry">New Entry</string>
+
+    <!-- Strings related to login -->
+    <string name="psp_nr">PSP-Container</string>
+    <string name="time_from">From</string>
+    <string name="time_to">To</string>
+    <string name="error_field_required_entry">This field is required</string>
+    <string name="pick_date">Change Date</string>
+
+</resources>

@@ -6,7 +6,6 @@
     <string name="menu_logout">Logout</string>
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_newEntry">Neuer Eintrag</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_new_entry">NewEntryActivity</string>
 
 </resources>
