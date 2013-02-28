@@ -9,6 +9,9 @@
     <string name="img_logoDescription_main">Logo</string>
     <string name="pick_date_now">Datum</string>
     <string name="menu_newEntry">Neuer Eintrag</string>
+    <string name="login_progress_signing_in">Fetching Data</string>
+    
+    
     
  
 </resources>
