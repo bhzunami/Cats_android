@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -28,6 +26,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import ch.swisscom.cats_android.util.HttpHandler;
+
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class MainActivity extends FragmentActivity {
@@ -49,7 +50,6 @@ public class MainActivity extends FragmentActivity {
 	private ListView listView;
 	
 	Button btn_date;
-//	private View mLoginFormView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +102,7 @@ public class MainActivity extends FragmentActivity {
 		// set the date for today on the date button
 		String date = null;
 		this.year = c.get(Calendar.YEAR);
-		this.month = c.get(Calendar.MONTH);
+		this.month = 1 + c.get(Calendar.MONTH);
 		this.day = c.get(Calendar.DAY_OF_MONTH);
 		
 		date = day + "." + month + "." + year;
@@ -124,47 +124,21 @@ public class MainActivity extends FragmentActivity {
 			public void onSuccess(JSONArray array) {
 				// Pull out the first event on the public timeline
 				Log.i(TAG, "Request was successful.");
-
-				JSONObject firstEvent = null;
-
-				try {
-					firstEvent = (JSONObject) array.get(0);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				String text = null;
-				try {
-					text = firstEvent.getString("res");
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//
-				// Do something with the response
-				Log.i(TAG, text);
-
 				ajaxHandlerFinishLoading(array);
-
 			}
 
 			@Override
 			public void onFailure(Throwable e, String response) {
 				// Response failed :(
 				Log.e(TAG, "Could not get request!");
-				setToast("There was an error by get the request");
-//				showProgress(false);
+				showProgress(false);
 			}
 			
 			// Finish definition Class
-			public void onFinish(Throwable e, String response) {
-//				showProgress(false);
+			public void onFinish() {
+				showProgress(false);
 			}
-			
-		}
-
-		);
+		});
 	}
 
 	// If there was a error by getting the request
