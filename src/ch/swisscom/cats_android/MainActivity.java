@@ -7,11 +7,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -21,8 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -40,15 +43,21 @@ public class MainActivity extends FragmentActivity {
 	int year;
 	int month;
 	int day;
-
+	
+	private View loginStatusView;
+	private TextView loginStatusMessageView;
+	private ListView listView;
+	
+	Button btn_date;
+//	private View mLoginFormView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "Application started.");
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// Get SharedPreferences
+		// Get all variables and settings
 		this.initalize();
 	}
 
@@ -56,12 +65,14 @@ public class MainActivity extends FragmentActivity {
 		super.onStart();
 		Log.i(TAG, "Start Appi");
 		// get the userName to check if user is logged in
-		this.user = settings.getString("user", "");
-		if (this.user == "") {
+		if (this.user == "" || this.user == null) {
 			this.goToLoginView();
 			return;
 		}
-
+		// Show progress status
+		loginStatusMessageView.setText(R.string.login_progress_signing_in);
+		showProgress(true);
+		// get the data from server
 		this.executeHttpRequest();
 	}
 
@@ -75,8 +86,20 @@ public class MainActivity extends FragmentActivity {
 	private void initalize() {
 		// Get the sharedPreferenes
 		this.settings = getSharedPreferences(PREFS_NAME, 0);
-
 		
+		// Get the userName
+		if(settings == null) 
+			return;
+		this.user = settings.getString("user", "");
+
+		// get the view components on the view
+		this.loginStatusView = findViewById(R.id.ll_status);
+		this.loginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+		this.listView = (ListView) findViewById(R.id.list_jsonData);
+		
+		btn_date = (Button) findViewById(R.id.btn_datePicker);
+		
+		// set the date for today on the date button
 		String date = null;
 		this.year = c.get(Calendar.YEAR);
 		this.month = c.get(Calendar.MONTH);
@@ -88,8 +111,8 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private void updateDateButton(String date) {
-		Button btn_date;
-		btn_date = (Button) findViewById(R.id.btn_datePicker);
+		if (btn_date == null)
+			return;
 		btn_date.setText(date);
 	}
 
@@ -131,13 +154,21 @@ public class MainActivity extends FragmentActivity {
 				// Response failed :(
 				Log.e(TAG, "Could not get request!");
 				setToast("There was an error by get the request");
+//				showProgress(false);
 			}
+			
 			// Finish definition Class
+			public void onFinish(Throwable e, String response) {
+//				showProgress(false);
+			}
+			
 		}
 
 		);
 	}
 
+	// If there was a error by getting the request
+	// let the user know
 	public void setToast(String message) {
 		Context context = getApplicationContext();
 		CharSequence text = message;
@@ -174,8 +205,6 @@ public class MainActivity extends FragmentActivity {
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, list);
 
-		ListView listView = (ListView) findViewById(R.id.list_jsonData);
-
 		listView.setAdapter(adapter);
 	}
 
@@ -203,6 +232,7 @@ public class MainActivity extends FragmentActivity {
 		startActivity(intent);
 	}
 
+	// Catch the choosen menu point
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
@@ -220,6 +250,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 	
+	// Update button from listPicker
 	public void setDate(int day, int month, int year) {
 		this.updateDateButton(day +"." +month +"." +year);
 	}
@@ -228,6 +259,47 @@ public class MainActivity extends FragmentActivity {
 	public void showDatePickerDialog(View v) {
 	    DialogFragment newFragment = new DatePickerFragment("MAIN");
 	    newFragment.show(getSupportFragmentManager(), "datePicker");	    
+	}
+	
+	/**
+	 * Shows the progress UI and hides the login form.
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+	private void showProgress(final boolean show) {
+		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+		// for very easy animations. If available, use these APIs to fade-in
+		// the progress spinner.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+			int shortAnimTime = getResources().getInteger(
+					android.R.integer.config_shortAnimTime);
+
+			loginStatusView.setVisibility(View.VISIBLE);
+			loginStatusView.animate().setDuration(shortAnimTime)
+					.alpha(show ? 1 : 0)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							loginStatusView.setVisibility(show ? View.VISIBLE
+									: View.GONE);
+						}
+					});
+
+			listView.setVisibility(View.VISIBLE);
+			listView.animate().setDuration(shortAnimTime)
+					.alpha(show ? 0 : 1)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							listView.setVisibility(show ? View.GONE
+									: View.VISIBLE);
+						}
+					});
+		} else {
+			// The ViewPropertyAnimator APIs are not available, so simply show
+			// and hide the relevant UI components.
+			loginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
+			listView.setVisibility(show ? View.GONE : View.VISIBLE);
+		}
 	}
 
 }
