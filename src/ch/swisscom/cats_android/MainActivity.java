@@ -5,6 +5,9 @@ import java.util.Calendar;
 
 import org.json.JSONArray;
 
+import ch.swisscom.cats_android.util.HttpHandler;
+import ch.swisscom.cats_android.util.HttpHandlerDelegate;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -26,31 +29,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import ch.swisscom.cats_android.util.HttpHandler;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements HttpHandlerDelegate {
 
 	public static final String PREFS_NAME = "UserAccount";
 	private static final String TAG = "CATS_ANDROID";
 
-	private String user = null;
+	private String userName = null;
+	private String userPassword = null;
 
 	SharedPreferences settings = null;
-	
+
 	final Calendar c = Calendar.getInstance();
 	int year;
 	int month;
 	int day;
-	
+
 	private View loginStatusView;
 	private TextView loginStatusMessageView;
 	private ListView listView;
-	
+
 	Button btn_date;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "Application started.");
@@ -65,16 +64,20 @@ public class MainActivity extends FragmentActivity {
 		super.onStart();
 		Log.i(TAG, "Start Appi");
 		// get the userName to check if user is logged in
-		if (this.user == "" || this.user == null) {
+		if (this.userName == "" || this.userName == null) {
 			this.goToLoginView();
 			return;
 		}
+		
 		// Show progress status
 		loginStatusMessageView.setText(R.string.login_progress_signing_in);
 		showProgress(true);
-		// get the data from server
-		this.executeHttpRequest();
+		
+		this.getLoginData();
+		
+		this.getHttpRequest();
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,60 +89,41 @@ public class MainActivity extends FragmentActivity {
 	private void initalize() {
 		// Get the sharedPreferenes
 		this.settings = getSharedPreferences(PREFS_NAME, 0);
-		
-		// Get the userName
-		if(settings == null) 
-			return;
-		this.user = settings.getString("user", "");
 
+		// Get the userName
+		this.getLoginData();
+		
 		// get the view components on the view
 		this.loginStatusView = findViewById(R.id.ll_status);
 		this.loginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
 		this.listView = (ListView) findViewById(R.id.list_jsonData);
-		
-		btn_date = (Button) findViewById(R.id.btn_datePicker);
-		
+		this.btn_date = (Button) findViewById(R.id.btn_datePicker);
+
 		// set the date for today on the date button
 		String date = null;
 		this.year = c.get(Calendar.YEAR);
 		this.month = 1 + c.get(Calendar.MONTH);
 		this.day = c.get(Calendar.DAY_OF_MONTH);
-		
 		date = day + "." + month + "." + year;
 		this.updateDateButton(date);
-		
 	}
-	
+
 	private void updateDateButton(String date) {
 		if (btn_date == null)
 			return;
 		btn_date.setText(date);
 	}
 
-	public void executeHttpRequest() {
-		Log.i(TAG, "Get request.");
-		// perform request to server
-		HttpHandler.get("time", null, new JsonHttpResponseHandler() {
+	private String getDateFromButton() {
+		String date[] = null;
+		if (btn_date == null)
+			return null;
 
-			public void onSuccess(JSONArray array) {
-				// Pull out the first event on the public timeline
-				Log.i(TAG, "Request was successful.");
-				ajaxHandlerFinishLoading(array);
-			}
-
-			@Override
-			public void onFailure(Throwable e, String response) {
-				// Response failed :(
-				Log.e(TAG, "Could not get request!");
-				showProgress(false);
-			}
-			
-			// Finish definition Class
-			public void onFinish() {
-				showProgress(false);
-			}
-		});
+		date = btn_date.getText().toString().split("[\\s\\.]");
+		return date[2] +"-" + date[1] +"-" + date[0];
 	}
+
+
 
 	// If there was a error by getting the request
 	// let the user know
@@ -152,25 +136,11 @@ public class MainActivity extends FragmentActivity {
 		toast.show();
 	}
 
-	// Parse the Json into ArrayList<String>
-	private ArrayList<String> getDataFromJson() {
-		ArrayList<String> values = new ArrayList<String>();
-		values.add("Android");
-		values.add("1");
-		values.add("2");
-		values.add("3");
-		values.add("4");
-		values.add("5");
-		values.add("6");
-		values.add("6");
-		values.add("7");
-		return values;
-
-	}
-
-	public void ajaxHandlerFinishLoading(JSONArray array) {
+	public void jsonHandlerFinishLoading(JSONArray array) {
+		Log.i(TAG, array.toString());
+		this.showProgress(false);
 		// TODO: Handle json array
-		this.createListView(this.getDataFromJson());
+		this.createListView(new ArrayList<String>());
 	}
 
 	private void createListView(ArrayList<String> list) {
@@ -200,7 +170,7 @@ public class MainActivity extends FragmentActivity {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
 	}
-	
+
 	private void goToNewEntryView() {
 		Intent intent = new Intent(this, NewEntryActivity.class);
 		startActivity(intent);
@@ -214,7 +184,7 @@ public class MainActivity extends FragmentActivity {
 			this.logoutUser();
 			return true;
 		case R.id.menu_refresh:
-			this.executeHttpRequest();
+			 this.getHttpRequest();
 			return true;
 		case R.id.menu_newEntry:
 			this.goToNewEntryView();
@@ -223,23 +193,23 @@ public class MainActivity extends FragmentActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	// Update button from listPicker
 	public void setDate(int day, int month, int year) {
-		this.updateDateButton(day +"." +month +"." +year);
+		this.updateDateButton(day + "." + month + "." + year);
 	}
 
 	@SuppressLint("NewApi")
 	public void showDatePickerDialog(View v) {
-	    DialogFragment newFragment = new DatePickerFragment("MAIN");
-	    newFragment.show(getSupportFragmentManager(), "datePicker");	    
+		DialogFragment newFragment = new DatePickerFragment("MAIN");
+		newFragment.show(getSupportFragmentManager(), "datePicker");
 	}
-	
+
 	/**
 	 * Shows the progress UI and hides the login form.
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
+	public void showProgress(final boolean show) {
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
 		// for very easy animations. If available, use these APIs to fade-in
 		// the progress spinner.
@@ -259,8 +229,7 @@ public class MainActivity extends FragmentActivity {
 					});
 
 			listView.setVisibility(View.VISIBLE);
-			listView.animate().setDuration(shortAnimTime)
-					.alpha(show ? 0 : 1)
+			listView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1)
 					.setListener(new AnimatorListenerAdapter() {
 						@Override
 						public void onAnimationEnd(Animator animation) {
@@ -276,4 +245,32 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
+
+	private void getLoginData() {
+		if (settings == null)
+			return;
+		this.userName = settings.getString("user", "");
+		this.userPassword = settings.getString("password", "");
+
+	}
+
+	private void getHttpRequest() {
+		// get the data from server
+
+		Log.i(TAG, "Get JsonData");
+		HttpHandler jsonHandler = new HttpHandler();
+		jsonHandler.setDelegate(this);
+
+		Log.i(TAG, "user: " + this.userName + " Password: " + this.userPassword);
+		jsonHandler.setUserName(this.userName);
+		jsonHandler.setUserPassword(this.userPassword);
+		jsonHandler.execute("time?date=" + getDateFromButton());
+		
+		if( jsonHandler.isCancelled() ) {
+			Log.i(TAG, "CANCELD");
+			this.showProgress(false);
+			this.setToast("Es ist ein Fehler aufgetreten");
+		}
+
+	}
 }
