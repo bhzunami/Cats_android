@@ -11,6 +11,12 @@ import android.widget.TimePicker;
 
 public class TimePickerFragment extends DialogFragment implements
 		TimePickerDialog.OnTimeSetListener {
+	
+	private String s;
+	
+	public TimePickerFragment(String s){
+		this.s = s;
+	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -25,6 +31,12 @@ public class TimePickerFragment extends DialogFragment implements
 	}
 
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		
+		if(s.contentEquals("FROM")){
+			((NewEntryActivity)getActivity()).setTimeFrom(hourOfDay, minute);
+		}else if(s.contentEquals("TO")){
+			((NewEntryActivity)getActivity()).setTimeTo(hourOfDay, minute);
+		}
 
 	}
 }

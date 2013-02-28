@@ -9,5 +9,19 @@
     <string name="error_field_required_entry">This field is required</string>
     <string name="pick_date">Change Date</string>
     <string name="title_activity_new_entry">Neuer Eintrag</string>
-
+    <string name="txt_new_entry">Neuer Eintrag</string>
+    <string name="txt_time_from">Startzeit</string>
+    <string name="txt_time_to">Endzeit</string>
+	<string name="txt_save">Eintrag Speichern</string>
+	
+	<string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
 </resources>
