@@ -37,18 +37,17 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 	private String userName = null;
 	private String userPassword = null;
 
-	SharedPreferences settings = null;
+	private SharedPreferences settings = null;
 
-	final Calendar c = Calendar.getInstance();
-	int year;
-	int month;
-	int day;
+	private Calendar calendar;
+	private int year;
+	private int month;
+	private int day;
 
 	private View loginStatusView;
 	private TextView loginStatusMessageView;
 	private ListView listView;
-
-	Button btn_date;
+	private Button btn_date;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		this.initalize();
 	}
 
-	public void onStart() {
+	protected void onStart() {
 		super.onStart();
 		Log.i(TAG, "Start Appi");
 		// get the userName to check if user is logged in
@@ -74,16 +73,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		showProgress(true);
 		
 		this.getLoginData();
-		
 		this.getHttpRequest();
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
 	}
 
 	private void initalize() {
@@ -100,10 +90,11 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		this.btn_date = (Button) findViewById(R.id.btn_datePicker);
 
 		// set the date for today on the date button
+		this.calendar = Calendar.getInstance();
 		String date = null;
-		this.year = c.get(Calendar.YEAR);
-		this.month = 1 + c.get(Calendar.MONTH);
-		this.day = c.get(Calendar.DAY_OF_MONTH);
+		this.year = calendar.get(Calendar.YEAR);
+		this.month = 1 + calendar.get(Calendar.MONTH);
+		this.day = calendar.get(Calendar.DAY_OF_MONTH);
 		date = day + "." + month + "." + year;
 		this.updateDateButton(date);
 	}
@@ -123,8 +114,53 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		return date[2] +"-" + date[1] +"-" + date[0];
 	}
 
+	private void createListView(ArrayList<String> list) {
+		ArrayAdapter<String> adapter;
 
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, list);
 
+		listView.setAdapter(adapter);
+	}
+
+	private void goToLoginView() {
+		Intent intent = new Intent(this, LoginActivity.class);
+		startActivity(intent);
+	}
+
+	private void goToNewEntryView() {
+		Intent intent = new Intent(this, NewEntryActivity.class);
+		startActivity(intent);
+	}
+	
+	private void getLoginData() {
+		if (settings == null)
+			return;
+		this.userName = settings.getString("user", "");
+		this.userPassword = settings.getString("password", "");
+
+	}
+
+	private void getHttpRequest() {
+		// get the data from server
+		Log.i(TAG, "Get JsonData");
+		HttpHandler jsonHandler = new HttpHandler();
+		jsonHandler.setDelegate(this);
+
+		Log.i(TAG, "user: " + this.userName + " Password: " + this.userPassword);
+		jsonHandler.setUserName(this.userName);
+		jsonHandler.setUserPassword(this.userPassword);
+		jsonHandler.execute("time?date=" + getDateFromButton());
+
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
 	// If there was a error by getting the request
 	// let the user know
 	public void setToast(String message) {
@@ -142,16 +178,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		// TODO: Handle json array
 		this.createListView(new ArrayList<String>());
 	}
-
-	private void createListView(ArrayList<String> list) {
-		ArrayAdapter<String> adapter;
-
-		adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, list);
-
-		listView.setAdapter(adapter);
-	}
-
+	
 	public void logoutUser() {
 		if (settings == null)
 			return;
@@ -159,21 +186,9 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		SharedPreferences.Editor editor = this.settings.edit();
 		editor.putString("user", null);
 		editor.putString("password", null);
-
 		editor.commit();
-
+		// Go to the Login View
 		this.goToLoginView();
-
-	}
-
-	private void goToLoginView() {
-		Intent intent = new Intent(this, LoginActivity.class);
-		startActivity(intent);
-	}
-
-	private void goToNewEntryView() {
-		Intent intent = new Intent(this, NewEntryActivity.class);
-		startActivity(intent);
 	}
 
 	// Catch the choosen menu point
@@ -243,34 +258,5 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 			loginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
 			listView.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
-	}
-
-
-	private void getLoginData() {
-		if (settings == null)
-			return;
-		this.userName = settings.getString("user", "");
-		this.userPassword = settings.getString("password", "");
-
-	}
-
-	private void getHttpRequest() {
-		// get the data from server
-
-		Log.i(TAG, "Get JsonData");
-		HttpHandler jsonHandler = new HttpHandler();
-		jsonHandler.setDelegate(this);
-
-		Log.i(TAG, "user: " + this.userName + " Password: " + this.userPassword);
-		jsonHandler.setUserName(this.userName);
-		jsonHandler.setUserPassword(this.userPassword);
-		jsonHandler.execute("time?date=" + getDateFromButton());
-		
-		if( jsonHandler.isCancelled() ) {
-			Log.i(TAG, "CANCELD");
-			this.showProgress(false);
-			this.setToast("Es ist ein Fehler aufgetreten");
-		}
-
 	}
 }
