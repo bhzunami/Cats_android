@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import ch.swisscom.cats_android.util.DatePickerFragment;
+import ch.swisscom.cats_android.util.TimePickerFragment;
 
 public class NewEntryActivity extends FragmentActivity {
 

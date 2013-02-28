@@ -96,7 +96,8 @@ public class HttpHandler extends AsyncTask<String, Void, String> {
 
 		} catch (Exception e) {
 			Log.e("CATS_ANDROID", "Json Failure");
-			e.printStackTrace();
+			this.delegate.setToast("Fehler beim Parsen des Json Array");
+			this.delegate.showProgress(false);
 		}
 	}
 	

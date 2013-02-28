@@ -1,6 +1,9 @@
-package ch.swisscom.cats_android;
+package ch.swisscom.cats_android.util;
 
 import java.util.Calendar;
+
+import ch.swisscom.cats_android.MainActivity;
+import ch.swisscom.cats_android.NewEntryActivity;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;

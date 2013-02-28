@@ -5,9 +5,6 @@ import java.util.Calendar;
 
 import org.json.JSONArray;
 
-import ch.swisscom.cats_android.util.HttpHandler;
-import ch.swisscom.cats_android.util.HttpHandlerDelegate;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -28,6 +25,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import ch.swisscom.cats_android.util.DatePickerFragment;
+import ch.swisscom.cats_android.util.HttpHandler;
+import ch.swisscom.cats_android.util.HttpHandlerDelegate;
 
 public class MainActivity extends FragmentActivity implements HttpHandlerDelegate {
 

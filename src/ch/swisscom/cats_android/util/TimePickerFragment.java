@@ -1,6 +1,8 @@
-package ch.swisscom.cats_android;
+package ch.swisscom.cats_android.util;
 
 import java.util.Calendar;
+
+import ch.swisscom.cats_android.NewEntryActivity;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
