@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 
+import ch.swisscom.cats_android.MainActivity;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -23,14 +24,18 @@ import android.util.Log;
  * is retrieved tweets
  */
 public class HttpHandler extends AsyncTask<String, Void, String> {
-	
+
 	private static final String BASE_URL = "http://riagsrv10.riagdom2.resource.ch:8010/zspa_mobile/";
-	
+
 	private HttpHandlerDelegate delegate;
-	
+
 	private String userName;
 	private String userPassword;
 	
+	public HttpHandler(HttpHandlerDelegate delegate) {
+		this.delegate = delegate;
+	}
+
 	protected String doInBackground(String... url) {
 
 		// start building result which will be json string
@@ -40,16 +45,19 @@ public class HttpHandler extends AsyncTask<String, Void, String> {
 			HttpClient sapClient = new DefaultHttpClient();
 
 			try {
+				
+				Log.i(MainActivity.TAG, "URL: "+BASE_URL +searchURL);
 
-				HttpGet httpGet = new HttpGet(BASE_URL +searchURL);
+				HttpGet httpGet = new HttpGet(BASE_URL + searchURL);
 				httpGet.setHeader("X-Sapu", this.userName);
 				httpGet.setHeader("X-Sapp", this.userPassword);
-				
-				httpGet.wait(10000);
+
+//				httpGet.wait(10000);
 
 				HttpResponse sapResponse = sapClient.execute(httpGet);
 
 				StatusLine searchStatus = sapResponse.getStatusLine();
+				Log.i(MainActivity.TAG, "Status: " +searchStatus.getStatusCode() );
 				// Check if we get 200
 				if (searchStatus.getStatusCode() == 200) {
 					// get the response
@@ -66,16 +74,12 @@ public class HttpHandler extends AsyncTask<String, Void, String> {
 					while ((lineIn = tweetReader.readLine()) != null) {
 						sapFeedBuilder.append(lineIn);
 					}
-				} 
+				}
 
 			} catch (Exception e) {
-				
-				if( this.isCancelled() ) {
-					Log.e("Cats", "Fehler beim Daten holen");
-				}
-				
+				Log.e("Cats", "Fehler beim Daten holen");
+				Log.e(MainActivity.TAG, e.toString());
 			}
-
 		}
 		return sapFeedBuilder.toString();
 	}
@@ -89,35 +93,34 @@ public class HttpHandler extends AsyncTask<String, Void, String> {
 
 			// get JSONArray contained within the JSONObject retrieved -
 			// "results"
+			Log.i(MainActivity.TAG, "Result stream: " +result);
 			JSONArray jsonArray = new JSONArray(result);
-			if( this.delegate == null)
+			Log.i(MainActivity.TAG, "myArray: " +jsonArray.toString() );
+			if (this.delegate == null)
 				return;
 			this.delegate.jsonHandlerFinishLoading(jsonArray);
 
 		} catch (Exception e) {
-			Log.e("CATS_ANDROID", "Json Failure");
-			this.delegate.setToast("Fehler beim Parsen des Json Array");
+			Log.e(MainActivity.TAG, "Failure");
+			Log.e(MainActivity.TAG, e.toString() );
+			this.delegate.setToast("Server nicht erreichbar");
 			this.delegate.showProgress(false);
 		}
 	}
-	
 
 	protected void onCancelled() {
 		Log.i("CATS_ANDROID", "onCancel");
 		this.delegate.setToast("Fehler");
 		this.delegate.showProgress(false);
 	}
+
+	public void setUserLogin(String userName, String userPassword) {
+		this.userName = userName;
+		this.userPassword = userPassword;
+	}
 	
 	public void setDelegate(HttpHandlerDelegate delegate) {
 		this.delegate = delegate;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
 	}
 
 }

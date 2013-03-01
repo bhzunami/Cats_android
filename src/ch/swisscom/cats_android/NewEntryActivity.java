@@ -69,6 +69,19 @@ public class NewEntryActivity extends FragmentActivity {
 		
 		
 	}
+	
+	private Integer[] getDateButton() {
+		Integer date[] = new Integer[3];
+		String button[];
+		if (dateButton == null)
+			return null;
+
+		button = dateButton.getText().toString().split("[\\s\\.]");
+		date[0] = Integer.parseInt(button[0]);
+		date[1]= Integer.parseInt(button[1]);
+		date[2] = Integer.parseInt(button[2]);
+		return date;
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,7 +91,7 @@ public class NewEntryActivity extends FragmentActivity {
 	}
 
 	public void showDatePickerDialog(View v) {
-		DialogFragment newFragment = new DatePickerFragment("NEWENTRY");
+		DialogFragment newFragment = new DatePickerFragment("NEWENTRY", getDateButton());
 		newFragment.show(getSupportFragmentManager(), "datePicker");
 	}
 	

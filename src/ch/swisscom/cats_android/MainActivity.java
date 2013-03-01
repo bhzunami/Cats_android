@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -12,6 +14,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -20,19 +23,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import ch.swisscom.cats_android.model.Event;
 import ch.swisscom.cats_android.util.DatePickerFragment;
+import ch.swisscom.cats_android.util.EventAdapter;
 import ch.swisscom.cats_android.util.HttpHandler;
 import ch.swisscom.cats_android.util.HttpHandlerDelegate;
+import ch.swisscom.cats_android.util.JsonParser;
 
-public class MainActivity extends FragmentActivity implements HttpHandlerDelegate {
+public class MainActivity extends FragmentActivity implements
+		HttpHandlerDelegate {
 
 	public static final String PREFS_NAME = "UserAccount";
-	private static final String TAG = "CATS_ANDROID";
+	public static final String TAG = "CATS_ANDROID";
 
 	private String userName = null;
 	private String userPassword = null;
@@ -54,6 +63,8 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		Log.i(TAG, "Application started.");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		// To disable the landscape mode!!!!!
+		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// Get all variables and settings
 		this.initalize();
@@ -67,11 +78,11 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 			this.goToLoginView();
 			return;
 		}
-		
+
 		// Show progress status
 		loginStatusMessageView.setText(R.string.login_progress_signing_in);
 		showProgress(true);
-		
+
 		this.getLoginData();
 		this.getHttpRequest();
 	}
@@ -82,7 +93,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 
 		// Get the userName
 		this.getLoginData();
-		
+
 		// get the view components on the view
 		this.loginStatusView = findViewById(R.id.ll_status);
 		this.loginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
@@ -96,6 +107,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		this.month = 1 + calendar.get(Calendar.MONTH);
 		this.day = calendar.get(Calendar.DAY_OF_MONTH);
 		date = day + "." + month + "." + year;
+		Log.i(TAG, "UpdateButton");
 		this.updateDateButton(date);
 	}
 
@@ -105,22 +117,51 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		btn_date.setText(date);
 	}
 
-	private String getDateFromButton() {
+	private String[] getDataFromDateButton() {
 		String date[] = null;
 		if (btn_date == null)
 			return null;
 
 		date = btn_date.getText().toString().split("[\\s\\.]");
-		return date[2] +"-" + date[1] +"-" + date[0];
+		return date;
+		
+	}
+	
+	private String getDateFromButton() {
+		String[] date = getDataFromDateButton();
+		return date[2] + "-" + date[1] + "-" + date[0];
+	}
+	
+	// For setting the correct date when date picker is called
+	private Integer[] getDateButton() {
+		Integer[] date = new Integer[3];
+		String button[] =  getDataFromDateButton();
+		date[0] = Integer.parseInt(button[0]);
+		date[1]= Integer.parseInt(button[1]);
+		date[2] = Integer.parseInt(button[2]);
+		return date;
 	}
 
-	private void createListView(ArrayList<String> list) {
-		ArrayAdapter<String> adapter;
+	private void createListView(ArrayList<Event> list) {
+		ArrayAdapter<Event> adapter;
 
-		adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, list);
+		adapter = new EventAdapter(MainActivity.this,
+				R.layout.list_item_layout, list);
+
+		// adapter = new ArrayAdapter<Event>(this,
+		// android.R.layout.simple_list_item_1, list);
 
 		listView.setAdapter(adapter);
+
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			//TODO: Switch to NewEntryView
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Event event = (Event) listView.getItemAtPosition(position);
+				setToast(event.getMemo());
+			}
+		});
 	}
 
 	private void goToLoginView() {
@@ -132,7 +173,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 		Intent intent = new Intent(this, NewEntryActivity.class);
 		startActivity(intent);
 	}
-	
+
 	private void getLoginData() {
 		if (settings == null)
 			return;
@@ -143,24 +184,40 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 
 	private void getHttpRequest() {
 		// get the data from server
-		Log.i(TAG, "Get JsonData");
-		HttpHandler jsonHandler = new HttpHandler();
-		jsonHandler.setDelegate(this);
+		HttpHandler jsonHandler = new HttpHandler(this);
 
 		Log.i(TAG, "user: " + this.userName + " Password: " + this.userPassword);
-		jsonHandler.setUserName(this.userName);
-		jsonHandler.setUserPassword(this.userPassword);
+		Log.i(TAG, "Date: " + getDateFromButton());
+		jsonHandler.setUserLogin(this.userName, this.userPassword);
 		jsonHandler.execute("time?date=" + getDateFromButton());
 
 	}
-	
+
+	private Boolean checkLogin(JSONArray jArray) {
+		JSONObject jObject = null;
+		try {
+			jObject = (JSONObject) jArray.get(0);
+			if (jObject.getString("res").equals("ss-error")) {
+				Log.i(TAG, "Login failureeeeee");
+				this.setToast("Benutzername oder Passwort falsch");
+				this.goToLoginView();
+				return false;
+			}
+
+		} catch (JSONException e) {
+			Log.i(TAG, "Login seems correct");
+			// Log.e(TAG, e.toString() );
+		}
+		return true;
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
-	
+
 	// If there was a error by getting the request
 	// let the user know
 	public void setToast(String message) {
@@ -173,12 +230,16 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 	}
 
 	public void jsonHandlerFinishLoading(JSONArray array) {
-		Log.i(TAG, array.toString());
+		// check if there is a login problem
+		if(!this.checkLogin(array))
+			return;
 		this.showProgress(false);
 		// TODO: Handle json array
-		this.createListView(new ArrayList<String>());
+		JsonParser jsonParser = new JsonParser(array);
+
+		this.createListView(jsonParser.getEventsFromJson());
 	}
-	
+
 	public void logoutUser() {
 		if (settings == null)
 			return;
@@ -199,7 +260,7 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 			this.logoutUser();
 			return true;
 		case R.id.menu_refresh:
-			 this.getHttpRequest();
+			this.getHttpRequest();
 			return true;
 		case R.id.menu_newEntry:
 			this.goToNewEntryView();
@@ -212,11 +273,12 @@ public class MainActivity extends FragmentActivity implements HttpHandlerDelegat
 	// Update button from listPicker
 	public void setDate(int day, int month, int year) {
 		this.updateDateButton(day + "." + month + "." + year);
+		this.getHttpRequest();
 	}
 
 	@SuppressLint("NewApi")
 	public void showDatePickerDialog(View v) {
-		DialogFragment newFragment = new DatePickerFragment("MAIN");
+		DialogFragment newFragment = new DatePickerFragment("MAIN", getDateButton());
 		newFragment.show(getSupportFragmentManager(), "datePicker");
 	}
 
